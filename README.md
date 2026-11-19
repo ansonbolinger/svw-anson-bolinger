@@ -10,6 +10,7 @@ This repository contains the solutions, multi-agent implementations, and verific
 | :--- | :--- | :--- | :--- |
 | **Challenge 1** | [`challenge-1-workflows/`](./challenge-1-workflows/) | Multi-Agent Workflow with ADK (Research, Validation, Refinement, Human Review) | Completed |
 | **Challenge 2** | [`challenge-2-rag/`](./challenge-2-rag/) | Integrating RAG and Google Search into a Multi-Agent System | Completed |
+| **Challenge 3** | [`challenge-3-mcp/`](./challenge-3-mcp/) | Connecting Agents to External Systems with Custom & Google MCP Servers | Completed |
 | *Future Challenges* | *TBD* | Additional mission-ready agent challenges | Pending |
 
 ---
@@ -132,30 +133,84 @@ The routing architecture uses an intelligent ADK router agent with dynamic agent
    - Analyzes user queries and dispatches via ADK `sub_agents` to `rag_search_agent` or `google_search_agent`.
 
 ### 3. How to Run & Verify Challenge 2
+```bash
+cd challenge-2-rag
+uv sync
+uvx google-agents-cli playground
+```
+Screenshots demonstrating the RAG and Google search multi-agent system are stored in:
+- [`challenge-2-rag/screenshots/`](./challenge-2-rag/screenshots/)
+
+---
+
+## Challenge 3: Connecting Agents to External Systems with MCP
+
+### 1. Overview
+The goal of Challenge 3 is to build and connect external tools to ADK agents using the **Model Context Protocol (MCP)** standard. The system integrates:
+1. A **custom FastMCP server** exposing local Python functions as callable tools.
+2. A **Google-provided MCP server** (`@google-cloud/gcloud-mcp`) connecting agents to Google Cloud tools.
+3. A **root router agent** directing inquiries to the appropriate MCP-powered specialist.
+
+### 2. Architecture & Agents Design
+
+```
+                      [User Inquiry]
+                            │
+                            ▼
+               ┌─────────────────────────┐
+               │    challenge_3_mcp      │  (Root Router Agent)
+               │    Evaluates intent     │
+               └────────────┬────────────┘
+                            │
+            ┌───────────────┴───────────────┐
+            │                               │
+            ▼                               ▼
+┌─────────────────────────┐   ┌─────────────────────────┐
+│    custom_mcp_agent     │   │    google_mcp_agent     │
+│   (McpToolset: Custom)  │   │  (McpToolset: Google)   │
+└───────────┬─────────────┘   └─────────────┬───────────┘
+            │                               │
+            ▼                               ▼
+┌─────────────────────────┐   ┌─────────────────────────┐
+│ Custom FastMCP Server   │   │ Google Cloud MCP Server │
+│ - System Diagnostics    │   │ - @google-cloud/        │
+│ - Cluster Budget Calc   │   │   gcloud-mcp            │
+│ - Text Transformations  │   │                         │
+└─────────────────────────┘   └─────────────────────────┘
+```
+
+#### Specialized Sub-Agents:
+1. **`custom_mcp_agent`** ([challenge-3-mcp/app/agent.py](./challenge-3-mcp/app/agent.py)):
+   - **Connected Server:** Custom FastMCP Server ([challenge-3-mcp/mcp_server/server.py](./challenge-3-mcp/mcp_server/server.py)) via stdio protocol.
+   - **Exposed MCP Tools:**
+     - `get_system_diagnostics`: Reads OS platform, architecture, status, and UTC timestamp.
+     - `calculate_resource_budget`: Computes total vCPUs, RAM, and hourly/monthly USD cloud budget based on cluster sizing.
+     - `transform_identifier`: Converts strings into code identifiers (`kebab-case`, `snake_case`, `camelCase`).
+
+2. **`google_mcp_agent`** ([challenge-3-mcp/app/agent.py](./challenge-3-mcp/app/agent.py)):
+   - **Connected Server:** Official Google-provided `@google-cloud/gcloud-mcp` via stdio connection.
+   - **Scope:** Google Cloud resource inspection, projects, active configurations, and CLI operations.
+
+3. **`root_agent` (`challenge_3_mcp`)**:
+   - Routes between custom operational MCP tools and Google Cloud platform tools.
+
+### 3. How to Run & Verify Challenge 3
 
 1. **Setup & Dependencies:**
    ```bash
-   cd challenge-2-rag
+   cd challenge-3-mcp
    uv sync
    ```
 
-2. **Environment Configuration:**
-   Verify `.env` has your active Google Cloud project:
-   ```env
-   GOOGLE_GENAI_USE_ENTERPRISE=true
-   GOOGLE_CLOUD_PROJECT=qwiklabs-gcp-02-184746eee247
-   GOOGLE_CLOUD_LOCATION=global
-   ```
-
-3. **Run the Agent Playground:**
+2. **Run the Agent Playground:**
    ```bash
    uvx google-agents-cli playground
    ```
 
-4. **Sample Test Prompts:**
-   - **Internal RAG Prompt:** `"What is the payload capacity of Novasphere's AetherBot v4?"`  
-     *Result:* Routes to `rag_search_agent`, calls internal datastore, returns 1,250 kg (2,755 lbs).
-   - **Internal Policy Prompt:** `"What is Novasphere's daily meal per diem for domestic travel?"`  
-     *Result:* Routes to `rag_search_agent`, returns \$85/day (\$20 breakfast, \$25 lunch, \$40 dinner).
-   - **Google Search Prompt:** `"Who won the men's 2024 ICC T20 World Cup?"`  
-     *Result:* Routes to `google_search_agent`, queries Google Search, returns India with match details.
+3. **Sample Test Prompts:**
+   - **Budget Calculation via Custom MCP:** `"Calculate the resource budget for a cluster with 4 nodes, 32 GB RAM per node, and 8 CPU cores per node"`  
+     *Result:* Dispatches to `custom_mcp_agent`, invokes `calculate_resource_budget`, returns 32 vCPUs, 128 GB RAM, and \$1,238.08/mo.
+   - **Diagnostics via Custom MCP:** `"What operating system and architecture is this system running on?"`  
+     *Result:* Dispatches to `custom_mcp_agent`, invokes `get_system_diagnostics`, returns Windows 11 (AMD64) with UTC timestamp.
+   - **Google Cloud Platform:** `"Check active gcloud configuration and project"`  
+     *Result:* Dispatches to `google_mcp_agent` utilizing `@google-cloud/gcloud-mcp`.
