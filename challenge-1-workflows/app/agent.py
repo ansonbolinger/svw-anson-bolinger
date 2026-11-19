@@ -26,6 +26,10 @@ from google.adk.agents import Agent, SequentialAgent
 from google.adk.apps import App
 from google.adk.models import Gemini
 from google.genai import types
+from dotenv import load_dotenv
+
+# Ensure local .env file overrides any inherited process environment variables
+load_dotenv(override=True)
 
 MODEL = "gemini-2.5-flash"
 
