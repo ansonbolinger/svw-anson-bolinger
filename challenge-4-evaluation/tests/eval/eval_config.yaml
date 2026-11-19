@@ -1,0 +1,6 @@
+metrics_to_run:
+  - policy_grounded_response_quality
+
+custom_metrics:
+  - name: policy_grounded_response_quality
+    custom_function_file: response_quality.py

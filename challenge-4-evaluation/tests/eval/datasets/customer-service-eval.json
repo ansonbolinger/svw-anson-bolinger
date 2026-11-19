@@ -1,0 +1,130 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "return-standard-within-30-days",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "I bought a coffee maker online 18 days ago with my order receipt. Can I still return it for a full refund?"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Yes, standard items can be returned within 30 days of purchase with receipt for a full refund to the original payment method."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "return-electronics-exceeded-14-days",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "I purchased wireless noise-canceling headphones 22 days ago. Can I return them for a refund?"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Electronics and smart devices must be returned within 14 days of purchase. Because 22 days have passed, they are not eligible for a return or refund unless covered by warranty."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "return-final-sale-clearance",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "I bought an outdoor jacket marked as 'Final Sale Clearance'. Can I exchange it or get store credit?"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Items marked as Final Sale or Clearance cannot be returned, refunded, or exchanged under any circumstances."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "return-missing-receipt",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "I received a backpack as a gift and do not have the receipt or order number. Can I get cash back?"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Returns without a receipt cannot receive cash refunds. They are eligible for store credit at the current lowest selling price with a valid photo ID."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "shipping-free-tier-threshold",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "My cart total is $42. How much more do I need to spend to get free standard shipping?"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Standard shipping is free on orders over $50. With a cart of $42, you need $8 more to qualify for free shipping."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "warranty-coverage-window",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "My blender stopped turning on 8 months after purchase. Does Cymbal Retail cover repairs or replacement?"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "All non-electronic appliances carry a 1-year limited warranty covering manufacturer defects. Since it is 8 months old, Cymbal Retail will repair or replace it with proof of purchase."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
