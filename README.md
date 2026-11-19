@@ -1,6 +1,6 @@
 # Skills Validation Workshop (SVW) - Anson Bolinger
 
-This repository contains the solutions, multi-agent implementations, and verification artifacts for the **L400: Mission-Ready Agents Skills Validation Workshop**.
+This repository contains the solutions, multi-agent implementations, evaluation frameworks, and verification artifacts for the **L400: Mission-Ready Agents Skills Validation Workshop**.
 
 ---
 
@@ -11,6 +11,7 @@ This repository contains the solutions, multi-agent implementations, and verific
 | **Challenge 1** | [`challenge-1-workflows/`](./challenge-1-workflows/) | Multi-Agent Workflow with ADK (Research, Validation, Refinement, Human Review) | Completed |
 | **Challenge 2** | [`challenge-2-rag/`](./challenge-2-rag/) | Integrating RAG and Google Search into a Multi-Agent System | Completed |
 | **Challenge 3** | [`challenge-3-mcp/`](./challenge-3-mcp/) | Connecting Agents to External Systems with Custom & Google MCP Servers | Completed |
+| **Challenge 4** | [`challenge-4-evaluation/`](./challenge-4-evaluation/) | Evaluating Agent Performance with the Agent Evaluation API & Test Suites | Completed |
 | *Future Challenges* | *TBD* | Additional mission-ready agent challenges | Pending |
 
 ---
@@ -195,22 +196,69 @@ The goal of Challenge 3 is to build and connect external tools to ADK agents usi
    - Routes between custom operational MCP tools and Google Cloud platform tools.
 
 ### 3. How to Run & Verify Challenge 3
+```bash
+cd challenge-3-mcp
+uv sync
+uvx google-agents-cli playground
+```
+Screenshots demonstrating the custom and Google-provided MCP tools are stored in:
+- [`challenge-3-mcp/screenshots/`](./challenge-3-mcp/screenshots/)
 
-1. **Setup & Dependencies:**
+---
+
+## Challenge 4: Evaluating Agent Performance with the Agent Evaluation API
+
+### 1. Overview
+The goal of Challenge 4 is to use the **ADK Agent Evaluation API** (`agents-cli eval`) to systematically test, benchmark, and optimize a customer service agent answering retail return, warranty, shipping, and refund policy questions (Cymbal Retail).
+
+### 2. Evaluation Workflow & Architecture
+
+```
+┌─────────────────────────────────┐
+│  Evaluation Dataset (6 Cases)   │ ──▶ customer-service-eval.json
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│  Agent Under Test (Inference)   │ ──▶ Baseline (Prompt A) vs. Optimized (Prompt B)
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│   Populated Traces Generation   │ ──▶ traces_*.json
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│  Policy-Grounded Judge Metric   │ ──▶ LLM-as-a-judge (tests/eval/response_quality.py)
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│  Comparative Performance Report │ ──▶ EVALUATION_REPORT.md (Score: 3.50 ➔ 5.00)
+└─────────────────────────────────┘
+```
+
+### 3. Evaluation Findings Summary
+
+| Phase | System Prompt | Mean Score (1-5) | Pass Rate | Key Findings |
+| :--- | :--- | :---: | :---: | :--- |
+| **Baseline** | Generic instructions | **3.50 / 5.0** | 50% | Hallucinated return deadlines for electronics; asked user for shipping thresholds; missed photo ID requirements. |
+| **Optimized** | Explicit policy grounding | **5.00 / 5.0** | **100%** | Strict 14-day electronic return enforcement, calculated shipping differences, enforced photo ID checks. |
+
+*Full comparative report available in:* [`challenge-4-evaluation/EVALUATION_REPORT.md`](./challenge-4-evaluation/EVALUATION_REPORT.md)
+
+### 4. How to Run Evaluations and Tests
+
+1. **Run the Full Evaluation Suite:**
    ```bash
-   cd challenge-3-mcp
+   cd challenge-4-evaluation
    uv sync
+   uvx google-agents-cli eval run --dataset tests/eval/datasets/customer-service-eval.json --output eval_results.json
    ```
 
-2. **Run the Agent Playground:**
+2. **Run Automated Unit & Integration Tests (Bonus Requirement):**
    ```bash
-   uvx google-agents-cli playground
+   uv run pytest tests/test_customer_service_agent.py
    ```
-
-3. **Sample Test Prompts:**
-   - **Budget Calculation via Custom MCP:** `"Calculate the resource budget for a cluster with 4 nodes, 32 GB RAM per node, and 8 CPU cores per node"`  
-     *Result:* Dispatches to `custom_mcp_agent`, invokes `calculate_resource_budget`, returns 32 vCPUs, 128 GB RAM, and \$1,238.08/mo.
-   - **Diagnostics via Custom MCP:** `"What operating system and architecture is this system running on?"`  
-     *Result:* Dispatches to `custom_mcp_agent`, invokes `get_system_diagnostics`, returns Windows 11 (AMD64) with UTC timestamp.
-   - **Google Cloud Platform:** `"Check active gcloud configuration and project"`  
-     *Result:* Dispatches to `google_mcp_agent` utilizing `@google-cloud/gcloud-mcp`.
+   *Results:* 3/3 tests passed (`test_agent_initialization`, `test_instruction_policy_coverage`, `test_agent_response_contains_grounded_policy`).
