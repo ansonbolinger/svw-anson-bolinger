@@ -13,7 +13,7 @@ This repository contains the solutions, multi-agent implementations, evaluation 
 | **Challenge 3** | [`challenge-3-mcp/`](./challenge-3-mcp/) | Connecting Agents to External Systems with Custom & Google MCP Servers | Completed |
 | **Challenge 4** | [`challenge-4-evaluation/`](./challenge-4-evaluation/) | Evaluating Agent Performance with the Agent Evaluation API & Test Suites | Completed |
 | **Challenge 5** | [`challenge-5-deployment/`](./challenge-5-deployment/) | Deploying an Enterprise Support Agent to Gemini Enterprise | Completed |
-| **Challenge 6** | [`challenge-6-dept-of-snow/`](./challenge-6-dept-of-snow/) | Case Study: Agentic Field Operations for Alaska Department of Snow (ADS) | In Progress |
+| **Challenge 6** | [`challenge-6-dept-of-snow/`](./challenge-6-dept-of-snow/) | Case Study: Agentic Field Operations for Alaska Department of Snow (ADS) | Completed |
 
 ---
 
@@ -301,14 +301,19 @@ The goal of Challenge 6 is to build and deploy an enterprise multi-agent operati
 4. **`root_agent` (`challenge_6_dept_of_snow`)**:
    - Central router coordinating the specialized sub-agents.
 
-### 3. Evaluation Results Summary
+### 3. Deployed Cloud Resource Details
+- **Reasoning Engine Resource ID:** `projects/28485185593/locations/us-east1/reasoningEngines/4968234549570961408`
+- **Target:** Google Cloud Agent Platform (Agent Runtime)
+- **Region:** `us-east1`
+- **A2A Agent Card:** Registered in Google Cloud Agent Registry
+
+### 4. Evaluation Results Summary
 - **Evaluation Dataset:** 5 storm-response scenarios ([`tests/eval/datasets/storm-response-eval.json`](./challenge-6-dept-of-snow/tests/eval/datasets/storm-response-eval.json)).
 - **Evaluation Metric:** Domain-grounded judge in `tests/eval/response_quality.py`.
 - **Results:** **Mean Score: 4.40 / 5.00** (100% pass rate). Detailed report available in [`challenge-6-dept-of-snow/EVALUATION_REPORT.md`](./challenge-6-dept-of-snow/EVALUATION_REPORT.md).
 
-### 4. How to Run Locally
-```bash
-cd challenge-6-dept-of-snow
-uv sync
-uvx google-agents-cli playground
-```
+### 5. Verification Screenshots
+Screenshots demonstrating the ADS operations agent deployed to Google Cloud and responding inside the Gemini Enterprise workspace are stored in:
+- [`challenge-6-dept-of-snow/screenshots/`](./challenge-6-dept-of-snow/screenshots/)
+  - `1.png` - Google Cloud Console Agent Runtime deployment and Reasoning Engine details
+  - `2.png` - Gemini Enterprise workspace conversation and field operations responses
