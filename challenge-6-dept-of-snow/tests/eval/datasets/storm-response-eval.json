@@ -1,0 +1,109 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "sensor-telemetry-thompson-pass",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "What is the current wind speed, snow accumulation, and road status on Thompson Pass?"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Thompson Pass (Sensor RICHARDSON-HWY-MP28) reports 52 mph winds, 24.0 inches of snow accumulation, an EXTREME avalanche risk, and a road status of RED_CLOSED."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "policy-closure-wind-threshold",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Under ADS official policy, what are the wind speed and visibility thresholds for a mandatory closure of Thompson Pass?"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "According to Section 2.1 of the ADS Operations Manual, Thompson Pass requires mandatory closure when sustained winds exceed 45 mph with visibility under 50 feet (blizzard conditions), or when the Avalanche Hazard Index is rated EXTREME."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "dispatch-avalanche-blower",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "We have 5 feet of avalanche debris blocking Turnagain Pass MP 63. Dispatch the appropriate rotary blower unit."
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Dispatched BLOWER-BRAVO-05 to Turnagain Pass MP 63 for AVALANCHE_CLEAR. Bravo series rotary blowers are rated for deep drift and avalanche debris removal."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "corridor-priority-sla",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "What is the clearing service standard and priority level for the Parks Highway (AK-3)?"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "The Parks Highway (AK-3) is designated as a Priority 1 Critical Corridor, requiring continuous 24/7 clearing during storm events with a maximum snow accumulation of 1.5 inches before plow intervention."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "public-travel-advisory-codes",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "What does a RED public travel advisory code mean under ADS guidelines?"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "A RED advisory code designates a Hazardous or Closed highway status where public travel is strongly discouraged or strictly prohibited, reserved for emergency convoys only."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

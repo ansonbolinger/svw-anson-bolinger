@@ -13,7 +13,7 @@ This repository contains the solutions, multi-agent implementations, evaluation 
 | **Challenge 3** | [`challenge-3-mcp/`](./challenge-3-mcp/) | Connecting Agents to External Systems with Custom & Google MCP Servers | Completed |
 | **Challenge 4** | [`challenge-4-evaluation/`](./challenge-4-evaluation/) | Evaluating Agent Performance with the Agent Evaluation API & Test Suites | Completed |
 | **Challenge 5** | [`challenge-5-deployment/`](./challenge-5-deployment/) | Deploying an Enterprise Support Agent to Gemini Enterprise | Completed |
-| *Challenge 6* | *TBD* | Case Study: Agentic Field Operations for Alaska Dept of Snow | Pending |
+| **Challenge 6** | [`challenge-6-dept-of-snow/`](./challenge-6-dept-of-snow/) | Case Study: Agentic Field Operations for Alaska Department of Snow (ADS) | In Progress |
 
 ---
 
@@ -250,7 +250,65 @@ The goal of Challenge 5 is to deploy an ADK agent to Google Cloud Agent Platform
 ### 4. Verification Screenshots
 Screenshots demonstrating the agent deployed in Google Cloud Console and operating inside the Gemini Enterprise workspace are stored in:
 - [`challenge-5-deployment/screenshots/`](./challenge-5-deployment/screenshots/)
-  - `1.png` - Cloud Console Reasoning Engine / Agent Runtime deployment view
-  - `2.png` - Gemini Enterprise workspace registration & configuration
-  - `3.png` - Agent answering enterprise support questions in Gemini Enterprise
-  - `4.png` - Live tool invocation and structured tracking output in Gemini Enterprise
+
+---
+
+## Challenge 6: Case Study - Agentic Field Operations for Alaska Department of Snow (ADS)
+
+### 1. Overview
+The goal of Challenge 6 is to build and deploy an enterprise multi-agent operations hub for the **Alaska Department of Snow (ADS)**. The system gives winter storm coordinators a unified conversational interface to monitor mountain pass sensors, dispatch heavy plow and blower equipment, consult agency avalanche closure policies, and track live regional blizzard forecasts.
+
+### 2. Architecture & Sub-Agents Design
+
+```
+                      [Operator Request]
+                              │
+                              ▼
+               ┌─────────────────────────────┐
+               │  challenge_6_dept_of_snow   │  (ADS Operations Coordinator)
+               │      Analyzes Intent        │
+               └──────────────┬──────────────┘
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        │                     │                     │
+        ▼                     ▼                     ▼
+┌────────────────┐    ┌────────────────┐    ┌────────────────┐
+│ field_dispatch │    │ policy_advisor │    │ weather_intel  │
+│     _agent     │    │     _agent     │    │     _agent     │
+│   (FastMCP)    │    │ (RAG Grounded) │    │(Google Search) │
+└───────┬────────┘    └───────┬────────┘    └───────┬────────┘
+        │                     │                     │
+        ▼                     ▼                     ▼
+┌────────────────┐    ┌────────────────┐    ┌────────────────┐
+│ Roadside Sensor│    │ ADS Operations │    │ Live Regional  │
+│ Telemetry and  │    │ Manual (pass   │    │ Weather & Snow │
+│ Fleet Dispatch │    │ closures, SLAs)│    │ Conditions     │
+└────────────────┘    └────────────────┘    └────────────────┘
+```
+
+#### Specialized Sub-Agents:
+1. **`field_dispatch_agent`** ([challenge-6-dept-of-snow/app/agent.py](./challenge-6-dept-of-snow/app/agent.py)):
+   - **Connected MCP Server:** FastMCP Backend Server ([challenge-6-dept-of-snow/mcp_server/ads_server.py](./challenge-6-dept-of-snow/mcp_server/ads_server.py)).
+   - **Tools:**
+     - `get_highway_sensor_status`: Queries roadside pavement sensors (pavement temp, wind speed, accumulation, avalanche danger).
+     - `dispatch_plow_unit`: Dispatches Alpha V-plows, Bravo rotary blowers, or Charlie chemical spreaders to designated mileposts.
+     - `get_fleet_readiness`: Reports active units, fuel reserves, and crew assignments.
+2. **`policy_advisor_agent`** ([challenge-6-dept-of-snow/app/agent.py](./challenge-6-dept-of-snow/app/agent.py)):
+   - **Grounding:** RAG tool ([challenge-6-dept-of-snow/app/tools/rag_tool.py](./challenge-6-dept-of-snow/app/tools/rag_tool.py)) backed by the ADS Operations Manual ([challenge-6-dept-of-snow/data/ads_policy_manual.md](./challenge-6-dept-of-snow/data/ads_policy_manual.md)).
+   - **Scope:** Enforces mandatory pass closure rules (e.g. Thompson Pass wind >45 mph or EXTREME avalanche risk) and corridor priority SLAs (Priority 1: 24/7 continuous clearing).
+3. **`weather_intel_agent`** ([challenge-6-dept-of-snow/app/agent.py](./challenge-6-dept-of-snow/app/agent.py)):
+   - **Grounding:** ADK's native `google_search` tool for live blizzard warnings and NOAA meteorological forecasts.
+4. **`root_agent` (`challenge_6_dept_of_snow`)**:
+   - Central router coordinating the specialized sub-agents.
+
+### 3. Evaluation Results Summary
+- **Evaluation Dataset:** 5 storm-response scenarios ([`tests/eval/datasets/storm-response-eval.json`](./challenge-6-dept-of-snow/tests/eval/datasets/storm-response-eval.json)).
+- **Evaluation Metric:** Domain-grounded judge in `tests/eval/response_quality.py`.
+- **Results:** **Mean Score: 4.40 / 5.00** (100% pass rate). Detailed report available in [`challenge-6-dept-of-snow/EVALUATION_REPORT.md`](./challenge-6-dept-of-snow/EVALUATION_REPORT.md).
+
+### 4. How to Run Locally
+```bash
+cd challenge-6-dept-of-snow
+uv sync
+uvx google-agents-cli playground
+```
