@@ -12,6 +12,7 @@ This repository contains the solutions, multi-agent implementations, evaluation 
 | **Challenge 2** | [`challenge-2-rag/`](./challenge-2-rag/) | Integrating RAG and Google Search into a Multi-Agent System | Completed |
 | **Challenge 3** | [`challenge-3-mcp/`](./challenge-3-mcp/) | Connecting Agents to External Systems with Custom & Google MCP Servers | Completed |
 | **Challenge 4** | [`challenge-4-evaluation/`](./challenge-4-evaluation/) | Evaluating Agent Performance with the Agent Evaluation API & Test Suites | Completed |
+| **Challenge 5** | [`challenge-5-deployment/`](./challenge-5-deployment/) | Deploying an Enterprise Support Agent to Gemini Enterprise | In Progress |
 | *Future Challenges* | *TBD* | Additional mission-ready agent challenges | Pending |
 
 ---
@@ -211,35 +212,7 @@ Screenshots demonstrating the custom and Google-provided MCP tools are stored in
 ### 1. Overview
 The goal of Challenge 4 is to use the **ADK Agent Evaluation API** (`agents-cli eval`) to systematically test, benchmark, and optimize a customer service agent answering retail return, warranty, shipping, and refund policy questions (Cymbal Retail).
 
-### 2. Evaluation Workflow & Architecture
-
-```
-┌─────────────────────────────────┐
-│  Evaluation Dataset (6 Cases)   │ ──▶ customer-service-eval.json
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│  Agent Under Test (Inference)   │ ──▶ Baseline (Prompt A) vs. Optimized (Prompt B)
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│   Populated Traces Generation   │ ──▶ traces_*.json
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│  Policy-Grounded Judge Metric   │ ──▶ LLM-as-a-judge (tests/eval/response_quality.py)
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│  Comparative Performance Report │ ──▶ EVALUATION_REPORT.md (Score: 3.50 ➔ 5.00)
-└─────────────────────────────────┘
-```
-
-### 3. Evaluation Findings Summary
+### 2. Evaluation Findings Summary
 
 | Phase | System Prompt | Mean Score (1-5) | Pass Rate | Key Findings |
 | :--- | :--- | :---: | :---: | :--- |
@@ -248,17 +221,22 @@ The goal of Challenge 4 is to use the **ADK Agent Evaluation API** (`agents-cli 
 
 *Full comparative report available in:* [`challenge-4-evaluation/EVALUATION_REPORT.md`](./challenge-4-evaluation/EVALUATION_REPORT.md)
 
-### 4. How to Run Evaluations and Tests
+### 3. How to Run Evaluations and Tests
+```bash
+cd challenge-4-evaluation
+uv sync
+uvx google-agents-cli eval run --dataset tests/eval/datasets/customer-service-eval.json --output eval_results.json
+uv run pytest tests/test_customer_service_agent.py
+```
 
-1. **Run the Full Evaluation Suite:**
-   ```bash
-   cd challenge-4-evaluation
-   uv sync
-   uvx google-agents-cli eval run --dataset tests/eval/datasets/customer-service-eval.json --output eval_results.json
-   ```
+---
 
-2. **Run Automated Unit & Integration Tests (Bonus Requirement):**
-   ```bash
-   uv run pytest tests/test_customer_service_agent.py
-   ```
-   *Results:* 3/3 tests passed (`test_agent_initialization`, `test_instruction_policy_coverage`, `test_agent_response_contains_grounded_policy`).
+## Challenge 5: Deploying an Enterprise Support Agent to Gemini Enterprise
+
+### 1. Overview
+The goal of Challenge 5 is to deploy an ADK agent to Google Cloud Agent Platform / Reasoning Engine, register it with Gemini Enterprise, and interact with the agent directly through the Gemini Enterprise workspace.
+
+### 2. Agent Tools & Capabilities ([challenge-5-deployment/app/agent.py](./challenge-5-deployment/app/agent.py))
+- `check_order_status`: Queries enterprise POs/orders (e.g., `ORD-10928`) returning real-time carrier tracking and estimated delivery times.
+- `calculate_shipping_tier`: Computes shipping costs (Standard Ground vs. Priority Express) and transit times by weight and destination ZIP code.
+- `lookup_support_policy`: Details return windows, warranty terms, and enterprise SLA policies.
