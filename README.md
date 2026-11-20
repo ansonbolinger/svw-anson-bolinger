@@ -12,8 +12,8 @@ This repository contains the solutions, multi-agent implementations, evaluation 
 | **Challenge 2** | [`challenge-2-rag/`](./challenge-2-rag/) | Integrating RAG and Google Search into a Multi-Agent System | Completed |
 | **Challenge 3** | [`challenge-3-mcp/`](./challenge-3-mcp/) | Connecting Agents to External Systems with Custom & Google MCP Servers | Completed |
 | **Challenge 4** | [`challenge-4-evaluation/`](./challenge-4-evaluation/) | Evaluating Agent Performance with the Agent Evaluation API & Test Suites | Completed |
-| **Challenge 5** | [`challenge-5-deployment/`](./challenge-5-deployment/) | Deploying an Enterprise Support Agent to Gemini Enterprise | In Progress |
-| *Future Challenges* | *TBD* | Additional mission-ready agent challenges | Pending |
+| **Challenge 5** | [`challenge-5-deployment/`](./challenge-5-deployment/) | Deploying an Enterprise Support Agent to Gemini Enterprise | Completed |
+| *Challenge 6* | *TBD* | Case Study: Agentic Field Operations for Alaska Dept of Snow | Pending |
 
 ---
 
@@ -240,3 +240,17 @@ The goal of Challenge 5 is to deploy an ADK agent to Google Cloud Agent Platform
 - `check_order_status`: Queries enterprise POs/orders (e.g., `ORD-10928`) returning real-time carrier tracking and estimated delivery times.
 - `calculate_shipping_tier`: Computes shipping costs (Standard Ground vs. Priority Express) and transit times by weight and destination ZIP code.
 - `lookup_support_policy`: Details return windows, warranty terms, and enterprise SLA policies.
+
+### 3. Deployed Cloud Resource Details
+- **Reasoning Engine Resource ID:** `projects/28485185593/locations/us-east1/reasoningEngines/4295509355232493568`
+- **Target:** Google Cloud Agent Platform (Agent Runtime)
+- **Region:** `us-east1`
+- **A2A Agent Card:** Registered in Google Cloud Agent Registry
+
+### 4. Verification Screenshots
+Screenshots demonstrating the agent deployed in Google Cloud Console and operating inside the Gemini Enterprise workspace are stored in:
+- [`challenge-5-deployment/screenshots/`](./challenge-5-deployment/screenshots/)
+  - `1.png` - Cloud Console Reasoning Engine / Agent Runtime deployment view
+  - `2.png` - Gemini Enterprise workspace registration & configuration
+  - `3.png` - Agent answering enterprise support questions in Gemini Enterprise
+  - `4.png` - Live tool invocation and structured tracking output in Gemini Enterprise
